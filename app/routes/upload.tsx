@@ -1,142 +1,51 @@
-import { type FormEvent, useState, useRef, useCallback } from 'react'
+import { type FormEvent, useState, useCallback, useEffect } from 'react'
 import Navbar from "~/components/Navbar";
 import FileUploader from "~/components/FileUploader";
-import { usePuterStore } from "~/lib/puter";
+import { useAuthStore } from "~/lib/store";
+import { api } from "~/lib/api";
 import { useNavigate } from "react-router";
-import { convertPdfToImage } from "~/lib/pdf2img";
-import { generateUUID } from "~/lib/utils";
-import { prepareInstructions } from "../../constants";
-
-const TOTAL_STEPS = 5;
-const AI_TIMEOUT_MS = 120_000; // 2 minutes
-
-const STEP_LABELS: Record<number, string> = {
-    1: 'Uploading resume...',
-    2: 'Converting to image...',
-    3: 'Uploading image...',
-    4: 'Preparing data...',
-    5: 'Analyzing with AI...',
-};
 
 const Upload = () => {
-    const { auth, isLoading, fs, ai, kv } = usePuterStore();
+    const { isAuthenticated, isLoading: authLoading } = useAuthStore();
     const navigate = useNavigate();
+    
     const [isProcessing, setIsProcessing] = useState(false);
-    const [currentStep, setCurrentStep] = useState(0);
-    const [statusText, setStatusText] = useState('');
     const [errorText, setErrorText] = useState('');
     const [file, setFile] = useState<File | null>(null);
-    const cancelledRef = useRef(false);
+
+    useEffect(() => {
+        if (!authLoading && !isAuthenticated) navigate('/auth?next=/upload');
+    }, [authLoading, isAuthenticated, navigate])
 
     const handleFileSelect = (file: File | null) => {
         setFile(file)
     }
 
-    const resetProcessing = useCallback(() => {
-        setIsProcessing(false);
-        setCurrentStep(0);
-        setStatusText('');
-        setErrorText('');
-        cancelledRef.current = false;
-    }, []);
-
     const handleCancel = useCallback(() => {
-        cancelledRef.current = true;
-        resetProcessing();
-    }, [resetProcessing]);
+        setIsProcessing(false);
+        setErrorText('');
+        // Note: fetch abort could be added to api.ts, but simple state reset is fine
+    }, []);
 
     const handleAnalyze = async ({ companyName, jobTitle, jobDescription, file }: { companyName: string, jobTitle: string, jobDescription: string, file: File }) => {
         setIsProcessing(true);
         setErrorText('');
-        cancelledRef.current = false;
 
-        // Step 1: Upload file
-        setCurrentStep(1);
-        setStatusText(STEP_LABELS[1]);
-        const uploadedFile = await fs.upload([file]);
-        if (cancelledRef.current) return;
-        if (!uploadedFile) { setErrorText('Failed to upload file. Please try again.'); setIsProcessing(false); return; }
-
-        // Step 2: Convert PDF to image
-        setCurrentStep(2);
-        setStatusText(STEP_LABELS[2]);
-        const imageFile = await convertPdfToImage(file);
-        if (cancelledRef.current) return;
-        if (!imageFile.file) { setErrorText('Failed to convert PDF to image.'); setIsProcessing(false); return; }
-
-        // Step 3: Upload image
-        setCurrentStep(3);
-        setStatusText(STEP_LABELS[3]);
-        const uploadedImage = await fs.upload([imageFile.file]);
-        if (cancelledRef.current) return;
-        if (!uploadedImage) { setErrorText('Failed to upload image.'); setIsProcessing(false); return; }
-
-        // Step 4: Prepare data
-        setCurrentStep(4);
-        setStatusText(STEP_LABELS[4]);
-        const uuid = generateUUID();
-        const data = {
-            id: uuid,
-            resumePath: uploadedFile.path,
-            imagePath: uploadedImage.path,
-            companyName, jobTitle, jobDescription,
-            feedback: '',
-        }
-        await kv.set(`resume:${uuid}`, JSON.stringify(data));
-        if (cancelledRef.current) return;
-
-        // Step 5: AI Analysis (with timeout)
-        setCurrentStep(5);
-        setStatusText(STEP_LABELS[5]);
-
-        let feedback;
         try {
-            feedback = await Promise.race([
-                ai.feedback(
-                    uploadedFile.path,
-                    prepareInstructions({ jobTitle, jobDescription })
-                ),
-                new Promise<never>((_, reject) =>
-                    setTimeout(() => reject(new Error('timeout')), AI_TIMEOUT_MS)
-                ),
-            ]);
-        } catch (err) {
-            if (cancelledRef.current) return;
+            const formData = new FormData();
+            formData.append("companyName", companyName);
+            formData.append("jobTitle", jobTitle);
+            formData.append("jobDescription", jobDescription);
+            formData.append("resume", file);
+
+            const data = await api.resumes.uploadAndAnalyze(formData);
+            
+            navigate(`/resume/${data.resume.id}`);
+        } catch (err: any) {
             console.error('AI analysis error:', err);
-            if (err instanceof Error && err.message === 'timeout') {
-                setErrorText('AI analysis timed out (2 min). The service may be busy — please try again.');
-            } else {
-                const detail = err instanceof Error
-                    ? err.message
-                    : typeof err === 'object'
-                        ? JSON.stringify(err)
-                        : String(err);
-                setErrorText(`AI analysis failed: ${detail}`);
-            }
+            setErrorText(`AI analysis failed: ${err.message || String(err)}`);
             setIsProcessing(false);
-            return;
         }
-
-        if (cancelledRef.current) return;
-        if (!feedback) { setErrorText('Failed to get AI feedback. Please try again.'); setIsProcessing(false); return; }
-
-        const feedbackText = typeof feedback.message.content === 'string'
-            ? feedback.message.content
-            : feedback.message.content[0].text;
-
-        try {
-            data.feedback = JSON.parse(feedbackText);
-        } catch {
-            setErrorText('Failed to parse AI response. Please try again.');
-            setIsProcessing(false);
-            return;
-        }
-
-        await kv.set(`resume:${uuid}`, JSON.stringify(data));
-        if (cancelledRef.current) return;
-
-        setStatusText('Analysis complete! Redirecting...');
-        navigate(`/resume/${uuid}`);
     }
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -149,15 +58,16 @@ const Upload = () => {
         const jobTitle = formData.get('job-title') as string;
         const jobDescription = formData.get('job-description') as string;
 
-        if (!companyName.trim() || !jobTitle.trim() || !jobDescription.trim() || !file) return;
+        if (!companyName.trim() || !jobTitle.trim() || !jobDescription.trim() || !file) {
+            setErrorText('Please fill all fields and select a PDF file.');
+            return;
+        }
 
         handleAnalyze({ companyName, jobTitle, jobDescription, file });
     }
 
-    const progressPercent = isProcessing ? Math.round((currentStep / TOTAL_STEPS) * 100) : 0;
-
     return (
-        <main className="bg-[url('/images/bg-main.svg')] bg-cover">
+        <main className="bg-[url('/images/bg-main.svg')] bg-cover min-h-screen">
             <Navbar />
 
             <section className="main-section">
@@ -165,47 +75,10 @@ const Upload = () => {
                     <h1>Smart feedback for your dream job</h1>
                     {isProcessing ? (
                         <div className="flex flex-col items-center gap-6 w-full max-w-xl mt-4">
-                            {/* Step indicator */}
-                            <div className="flex items-center gap-3">
-                                {Array.from({ length: TOTAL_STEPS }, (_, i) => {
-                                    const step = i + 1;
-                                    const isActive = step === currentStep;
-                                    const isCompleted = step < currentStep;
-                                    return (
-                                        <div key={step} className="flex items-center gap-2">
-                                            <div
-                                                className={`
-                                                    w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300
-                                                    ${isCompleted
-                                                        ? 'bg-green-500 text-white scale-90'
-                                                        : isActive
-                                                            ? 'primary-gradient text-white scale-110 shadow-lg'
-                                                            : 'bg-gray-200 text-gray-400'
-                                                    }
-                                                `}
-                                            >
-                                                {isCompleted ? '✓' : step}
-                                            </div>
-                                            {step < TOTAL_STEPS && (
-                                                <div className={`w-6 h-0.5 transition-all duration-300 ${isCompleted ? 'bg-green-500' : 'bg-gray-200'}`} />
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
                             {/* Status text */}
-                            <p className="text-xl text-dark-200 font-medium">
-                                Step {currentStep}/{TOTAL_STEPS}: {statusText}
+                            <p className="text-xl text-dark-200 font-medium animate-pulse">
+                                Analyzing with Gemini AI... (This usually takes 10-20 seconds)
                             </p>
-
-                            {/* Progress bar */}
-                            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                                <div
-                                    className="h-full rounded-full transition-all duration-700 ease-out progress-bar-gradient"
-                                    style={{ width: `${progressPercent}%` }}
-                                />
-                            </div>
 
                             {/* Error message */}
                             {errorText && (
@@ -216,12 +89,12 @@ const Upload = () => {
                             )}
 
                             {/* Animation */}
-                            <img src="/images/resume-scan.gif" className="w-full max-w-sm rounded-2xl" />
+                            <img src="/images/resume-scan.gif" className="w-full max-w-sm rounded-2xl shadow-xl" alt="Scanning animation" />
 
                             {/* Cancel button */}
                             <button
                                 onClick={handleCancel}
-                                className="cancel-button"
+                                className="cancel-button mt-4"
                             >
                                 Cancel Analysis
                             </button>
@@ -241,27 +114,28 @@ const Upload = () => {
                             )}
                         </>
                     )}
+                    
                     {!isProcessing && (
-                        <form id="upload-form" onSubmit={handleSubmit} className="flex flex-col gap-4 mt-8">
+                        <form id="upload-form" onSubmit={handleSubmit} className="flex flex-col gap-4 mt-8 w-full max-w-2xl bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
                             <div className="form-div">
-                                <label htmlFor="company-name">Company Name</label>
-                                <input type="text" name="company-name" placeholder="Company Name" id="company-name" required />
+                                <label htmlFor="company-name" className="font-semibold text-gray-700 mb-1">Company Name</label>
+                                <input type="text" name="company-name" placeholder="E.g. Google, Microsoft" id="company-name" required className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
                             </div>
                             <div className="form-div">
-                                <label htmlFor="job-title">Job Title</label>
-                                <input type="text" name="job-title" placeholder="Job Title" id="job-title" required />
+                                <label htmlFor="job-title" className="font-semibold text-gray-700 mb-1">Job Title</label>
+                                <input type="text" name="job-title" placeholder="E.g. Senior Software Engineer" id="job-title" required className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
                             </div>
                             <div className="form-div">
-                                <label htmlFor="job-description">Job Description</label>
-                                <textarea rows={5} name="job-description" placeholder="Job Description" id="job-description" required />
+                                <label htmlFor="job-description" className="font-semibold text-gray-700 mb-1">Job Description</label>
+                                <textarea rows={5} name="job-description" placeholder="Paste the full job description here..." id="job-description" required className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
                             </div>
 
-                            <div className="form-div">
-                                <label htmlFor="uploader">Upload Resume</label>
+                            <div className="form-div mt-4">
+                                <label htmlFor="uploader" className="font-semibold text-gray-700 mb-1">Upload Resume (PDF)</label>
                                 <FileUploader onFileSelect={handleFileSelect} />
                             </div>
 
-                            <button className="primary-button" type="submit">
+                            <button className="primary-button mt-6 text-lg py-4 w-full justify-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all" type="submit">
                                 Analyze Resume
                             </button>
                         </form>
@@ -271,4 +145,5 @@ const Upload = () => {
         </main>
     )
 }
-export default Upload
+
+export default Upload;

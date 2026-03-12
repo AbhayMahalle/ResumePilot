@@ -1,7 +1,8 @@
 import type { Route } from "./+types/home";
 import Navbar from "~/components/Navbar";
 import ResumeCard from "~/components/ResumeCard";
-import { usePuterStore } from "~/lib/puter";
+import { useAuthStore } from "~/lib/store";
+import { api } from "~/lib/api";
 import { Link, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 
@@ -13,26 +14,26 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const { auth, kv } = usePuterStore();
+  const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loadingResumes, setLoadingResumes] = useState(false);
 
   useEffect(() => {
-    if (!auth.isAuthenticated) navigate('/auth?next=/');
-  }, [auth.isAuthenticated, navigate])
+    if (!isAuthenticated) navigate('/auth?next=/');
+  }, [isAuthenticated, navigate])
 
   useEffect(() => {
     const loadResumes = async () => {
       setLoadingResumes(true);
 
-      const resumes = (await kv.list('resume:*', true)) as KVItem[];
-
-      const parsedResumes = resumes?.map((resume) => (
-        JSON.parse(resume.value) as Resume
-      ))
-
-      setResumes(parsedResumes || []);
+      try {
+        const data = await api.resumes.getAll();
+        setResumes(data.resumes || []);
+      } catch (error) {
+        console.error("Failed to load resumes", error);
+        setResumes([]);
+      }
       setLoadingResumes(false);
     }
 
