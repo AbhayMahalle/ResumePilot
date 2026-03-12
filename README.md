@@ -63,15 +63,16 @@ The frontend uses **React Router v7** with **Puter.js** for seamless browser-bas
 | [Mongoose](https://mongoosejs.com/) | MongoDB ODM with schema validation |
 | [JWT](https://jwt.io/) | Stateless token-based authentication |
 | [bcryptjs](https://github.com/dcodeIO/bcrypt.js) | Secure password hashing |
+| [Google Gemini AI](https://ai.google.dev/) | `gemini-2.5-flash` model for resume parsing and ATS evaluation |
+| [Multer](https://github.com/expressjs/multer) | Handling multipart/form-data for PDF uploads in memory |
 | [dotenv](https://github.com/motdotla/dotenv) | Environment variable management |
 
 ## 🔋 Features
 
-- 🔐 **JWT Authentication** — Secure register, login, and protected routes with token-based auth
-- 📄 **Resume Upload & Storage** — Upload and persist resumes via Puter.js cloud storage
-- 🤖 **AI-Powered Analysis** — Get ATS scores and detailed feedback using GPT-4o-mini
-- 📊 **Category-Wise Scoring** — Breakdown by ATS, content, structure, skills, and tone
-- 🔒 **Password Security** — Bcrypt hashing with salted rounds, never exposed in responses
+- 🔐 **JWT Authentication** — Secure register, login, and protected APIs with stateless tokens
+- 📄 **Custom MongoDB Storage** — Fast, reliable storage for users, resumes, and dynamic AI feedback
+- 🤖 **Gemini AI Integration** — Highly capable ATS scoring and category-wise improvement tips powered by `gemini-2.5-flash`
+- 🔒 **Stand-alone Backend** — Node.js/Express handles all PDF to base64 conversions securely natively
 - 📱 **Responsive Design** — Fully mobile-friendly UI built with Tailwind CSS
 - ⚡ **Fast Dev Experience** — Vite HMR, TypeScript, and modular architecture
 
@@ -93,15 +94,15 @@ ResumePilot/
 │   │   ├── ScoreGauge.tsx        # Gauge-style score display
 │   │   └── Summary.tsx           # Analysis summary
 │   ├── lib/                      # Utilities & stores
-│   │   ├── pdf2img.ts            # PDF to image conversion
-│   │   ├── puter.ts              # Puter.js Zustand store
-│   │   └── utils.ts              # Helper functions
+│   │   ├── api.ts                # Fluent OOP API wrapper for Express backend
+│   │   ├── store.ts              # Zustand global store for JWT Auth state
+│   │   └── utils.ts              # UI utility functions
 │   ├── routes/                   # Page routes
-│   │   ├── auth.tsx              # Authentication page
-│   │   ├── home.tsx              # Dashboard / resume list
-│   │   ├── resume.tsx            # Single resume view
-│   │   ├── upload.tsx            # Upload & analyze page
-│   │   └── wipe.tsx              # Data wipe page
+│   │   ├── auth.tsx              # Custom Login and Register UI
+│   │   ├── home.tsx              # Dashboard fetching resumes from API
+│   │   ├── resume.tsx            # Secure native PDF renderer and AI viewer
+│   │   ├── upload.tsx            # Multi-part file upload form
+│   │   └── wipe.tsx              # Cloud data wipe management
 │   ├── app.css                   # Global styles
 │   ├── root.tsx                  # Root layout
 │   └── routes.ts                 # Route definitions
@@ -110,13 +111,18 @@ ResumePilot/
 │   ├── config/
 │   │   └── db.js                 # MongoDB connection
 │   ├── controllers/
-│   │   └── authController.js     # Register, login, profile logic
+│   │   ├── authController.js     # Register, login, profile logic
+│   │   └── resumeController.js   # Upload, analyze, list, get, and delete logic
 │   ├── middleware/
 │   │   └── authMiddleware.js     # JWT verification middleware
 │   ├── models/
+│   │   ├── Resume.js             # Mongoose schema for resume binary and AI data
 │   │   └── User.js               # Mongoose user schema
 │   ├── routes/
-│   │   └── authRoutes.js         # Auth API route definitions
+│   │   ├── authRoutes.js         # Auth API route definitions
+│   │   └── resumeRoutes.js       # Resume/Gemini API route definitions
+│   ├── services/
+│   │   └── geminiService.js      # Google Generative AI integration & backoff strategy
 │   ├── .env                      # Environment variables (not committed)
 │   ├── package.json              # Backend dependencies
 │   └── server.js                 # Express server entry point
@@ -167,6 +173,7 @@ Create a `.env` file inside `backend/`:
 ```env
 MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/resumeAnalyzerDB?retryWrites=true&w=majority
 JWT_SECRET=your_jwt_secret_key
+GEMINI_API_KEY=your_google_gemini_api_key
 PORT=5000
 ```
 
@@ -179,6 +186,16 @@ node server.js
 The API will be running at [http://localhost:5000](http://localhost:5000).
 
 ## 🔐 API Endpoints
+
+### Resumes & AI Analysis (Protected Routes)
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/resumes/upload` | ✅ Bearer Token | Uploads a PDF, converts it, prompts Gemini AI, and saves result |
+| `GET` | `/api/resumes` | ✅ Bearer Token | Lists all resumes belonging to the user |
+| `GET` | `/api/resumes/:id` | ✅ Bearer Token | Fetches complete metadata and JSON AI feedback |
+| `GET` | `/api/resumes/:id/download` | ✅ Bearer Token | Safely streams the raw PDF binary back |
+| `DELETE` | `/api/resumes/:id` | ✅ Bearer Token | Hard deletes the resume from MongoDB |
 
 ### Authentication
 
