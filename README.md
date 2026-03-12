@@ -1,135 +1,244 @@
 <div align="center">
   <br />
-    <a href="https://www.youtube.com/watch?v=iYOz165wGkQ" target="_blank">
-      <img src="public/readme/hero.webp" alt="Project Banner">
-    </a>
+  <img src="public/readme/hero.webp" alt="ResumePilot Banner" />
   <br />
 
   <div>
-    <img alt="Static Badge" src="https://img.shields.io/badge/React-4c84f3?style=for-the-badge&logo=react&logoColor=white">
-        <img src="https://img.shields.io/badge/-Tailwind-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
-        <img src="https://img.shields.io/badge/-TypeScript-black?style=for-the-badge&logoColor=white&logo=typescript&color=3178C6" alt="TypeScript" />
-    <img alt="Static Badge" src="https://img.shields.io/badge/Puter.js-181758?style=for-the-badge&logoColor=white">
+    <img src="https://img.shields.io/badge/React_19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
+    <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+    <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" />
+    <img src="https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
+    <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
+    <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT" />
   </div>
 
-  <h3 align="center">AI Resume Analyzer</h3>
-
-   <div align="center">
-     Build this project step by step with our detailed tutorial on <a href="https://www.youtube.com/watch?v=XUkNR-JfHwo" target="_blank"><b>JavaScript Mastery</b></a> YouTube. Join the JSM family!
-    </div>
+  <h1 align="center">ResumePilot</h1>
+  <p align="center">
+    AI-powered resume analyzer that scores your resume against job descriptions and provides actionable feedback to land your dream job.
+  </p>
 </div>
 
-## 📋 <a name="table">Table of Contents</a>
+---
 
-1. ✨ [Introduction](#introduction)
-2. ⚙️ [Tech Stack](#tech-stack)
-3. 🔋 [Features](#features)
-4. 🤸 [Quick Start](#quick-start)
-5. 🔗 [Assets](#links)
-6. 🚀 [More](#more)
+## 📋 Table of Contents
 
-## 🚨 Tutorial
+- [✨ Introduction](#-introduction)
+- [⚙️ Tech Stack](#️-tech-stack)
+- [🔋 Features](#-features)
+- [📂 Project Structure](#-project-structure)
+- [🚀 Getting Started](#-getting-started)
+- [🔐 API Endpoints](#-api-endpoints)
+- [📄 Environment Variables](#-environment-variables)
+- [📸 Screenshots](#-screenshots)
 
-This repository contains the code corresponding to an in-depth tutorial available on our YouTube channel, <a href="https://www.youtube.com/@javascriptmastery/videos" target="_blank"><b>JavaScript Mastery</b></a>.
+## ✨ Introduction
 
-If you prefer visual learning, this is the perfect resource for you. Follow our tutorial to learn how to build projects like these step-by-step in a beginner-friendly manner!
+**ResumePilot** is a full-stack AI-powered resume analysis platform. Upload your resume, provide a job description, and get an instant ATS compatibility score along with detailed, category-wise feedback — covering content, structure, skills, tone, and more.
 
-<a href="https://www.youtube.com/watch?v=iYOz165wGkQ" target="_blank"><img src="https://github.com/sujatagunale/EasyRead/assets/151519281/1736fca5-a031-4854-8c09-bc110e3bc16d" /></a>
+The frontend uses **React Router v7** with **Puter.js** for seamless browser-based auth, storage, and AI analysis. The backend provides a standalone **Express.js REST API** with **JWT authentication** and **MongoDB Atlas** for secure user management.
 
-## <a name="introduction">✨ Introduction</a>
+## ⚙️ Tech Stack
 
-Build an AI-powered Resume Analyzer with React, React Router, and Puter.js! Implement seamless auth, upload and store resumes, and match candidates to jobs using smart AI evaluations. Get custom feedback and ATS scores tailored to each listing—all wrapped in a clean, reusable UI.
+### Frontend
 
-If you're getting started and need assistance or face any bugs, join our active Discord community with over **50k+** members. It's a place where people help each other out.
+| Technology | Purpose |
+|---|---|
+| [React 19](https://react.dev/) | UI library with reusable components |
+| [React Router v7](https://reactrouter.com/) | File-based routing, loaders, SSR |
+| [TypeScript](https://www.typescriptlang.org/) | Static typing and better DX |
+| [Tailwind CSS v4](https://tailwindcss.com/) | Utility-first styling |
+| [Zustand](https://github.com/pmndrs/zustand) | Minimal global state management |
+| [Vite](https://vite.dev/) | Lightning-fast dev server & bundler |
+| [Puter.js](https://puter.com/) | Browser-based auth, cloud storage & AI |
+| [pdfjs-dist](https://mozilla.github.io/pdf.js/) | Client-side PDF rendering |
 
-<a href="https://discord.com/invite/n6EdbFJ" target="_blank"><img src="https://github.com/sujatagunale/EasyRead/assets/151519281/618f4872-1e10-42da-8213-1d69e486d02e" /></a>
+### Backend
 
-## <a name="tech-stack">⚙️ Tech Stack</a>
+| Technology | Purpose |
+|---|---|
+| [Node.js](https://nodejs.org/) | JavaScript runtime |
+| [Express.js](https://expressjs.com/) | Web framework for REST APIs |
+| [MongoDB Atlas](https://www.mongodb.com/atlas) | Cloud-hosted NoSQL database |
+| [Mongoose](https://mongoosejs.com/) | MongoDB ODM with schema validation |
+| [JWT](https://jwt.io/) | Stateless token-based authentication |
+| [bcryptjs](https://github.com/dcodeIO/bcrypt.js) | Secure password hashing |
+| [dotenv](https://github.com/motdotla/dotenv) | Environment variable management |
 
-- **[React](https://react.dev/)** is a popular open‑source JavaScript library for building user interfaces using reusable components and a virtual DOM, enabling efficient, dynamic single-page and native apps.
+## 🔋 Features
 
-- **[React Router v7](https://reactrouter.com/)** is the go‑to routing library for React apps, offering nested routes, data loaders/actions, error boundaries, code splitting, and SSR support—all with a smooth upgrade path from v6.
+- 🔐 **JWT Authentication** — Secure register, login, and protected routes with token-based auth
+- 📄 **Resume Upload & Storage** — Upload and persist resumes via Puter.js cloud storage
+- 🤖 **AI-Powered Analysis** — Get ATS scores and detailed feedback using GPT-4o-mini
+- 📊 **Category-Wise Scoring** — Breakdown by ATS, content, structure, skills, and tone
+- 🔒 **Password Security** — Bcrypt hashing with salted rounds, never exposed in responses
+- 📱 **Responsive Design** — Fully mobile-friendly UI built with Tailwind CSS
+- ⚡ **Fast Dev Experience** — Vite HMR, TypeScript, and modular architecture
 
-- **[Puter.com](https://jsm.dev/resumind-puter)** is an advanced, open-source internet operating system designed to be feature-rich, exceptionally fast, and highly extensible. Puter can be used as: A privacy-first personal cloud to keep all your files, apps, and games in one secure place, accessible from anywhere at any time.
+## 📂 Project Structure
 
-- **[Puter.js](https://jsm.dev/resumind-puterjs)** is a tiny client‑side SDK that adds serverless auth, storage, database, and AI (GPT, Claude, DALL·E, OCR…) straight into your browser app—no backend needed and costs borne by users.
-
-- **[Tailwind CSS](https://tailwindcss.com/)** is a utility-first CSS framework that allows developers to design custom user interfaces by applying low-level utility classes directly in HTML, streamlining the design process.
-
-- **[TypeScript](https://www.typescriptlang.org/)** is a superset of JavaScript that adds static typing, providing better tooling, code quality, and error detection for developers, making it ideal for building large-scale applications.
-
-- **[Vite](https://vite.dev/)** is a fast build tool and dev server using native ES modules for instant startup, hot‑module replacement, and Rollup‑powered production builds—perfect for modern web development.
-
-- **[Zustand](https://github.com/pmndrs/zustand)** is a minimal, hook-based state management library for React. It lets you manage global state with zero boilerplate, no context providers, and excellent performance through selective state subscriptions.
-
-## <a name="features">🔋 Features</a>
-
-👉 **Easy & convenient auth**: Handle authentication entirely in the browser using Puter.js—no backend or setup required.
-
-👉 **Resume upload & storage**: Let users upload and store all their resumes in one place, safely and reliably.
-
-👉 **AI resume matching**: Provide a job listing and get an ATS score with custom feedback tailored to each resume.
-
-👉 **Reusable, modern UI**: Built with clean, consistent components for a great-looking and maintainable interface.
-
-👉 **Code Reusability**: Leverage reusable components and a modular codebase for efficient development.
-
-👉 **Cross-Device Compatibility**: Fully responsive design that works seamlessly across all devices.
-
-👉 **Modern UI/UX**: Clean, responsive design built with Tailwind CSS and shadcn/ui for a sleek user experience.
-
-And many more, including code architecture and reusability.
-
-## <a name="quick-start">🤸 Quick Start</a>
-
-Follow these steps to set up the project locally on your machine.
-
-**Prerequisites**
-
-Make sure you have the following installed on your machine:
-
-- [Git](https://git-scm.com/)
-- [Node.js](https://nodejs.org/en)
-- [npm](https://www.npmjs.com/) (Node Package Manager)
-
-**Cloning the Repository**
-
-```bash
-git clone https://github.com/adrianhajdin/ai-resume-analyzer.git
-cd ai-resume-analyzer
+```
+ResumePilot/
+│
+├── app/                          # Frontend (React Router v7)
+│   ├── components/               # Reusable UI components
+│   │   ├── ATS.tsx               # ATS score display
+│   │   ├── Accordion.tsx         # Expandable feedback sections
+│   │   ├── Details.tsx           # Resume detail view
+│   │   ├── FileUploader.tsx      # Drag-and-drop file upload
+│   │   ├── Navbar.tsx            # Navigation bar
+│   │   ├── ResumeCard.tsx        # Resume list card
+│   │   ├── ScoreBadge.tsx        # Score indicator badge
+│   │   ├── ScoreCircle.tsx       # Circular score visualization
+│   │   ├── ScoreGauge.tsx        # Gauge-style score display
+│   │   └── Summary.tsx           # Analysis summary
+│   ├── lib/                      # Utilities & stores
+│   │   ├── pdf2img.ts            # PDF to image conversion
+│   │   ├── puter.ts              # Puter.js Zustand store
+│   │   └── utils.ts              # Helper functions
+│   ├── routes/                   # Page routes
+│   │   ├── auth.tsx              # Authentication page
+│   │   ├── home.tsx              # Dashboard / resume list
+│   │   ├── resume.tsx            # Single resume view
+│   │   ├── upload.tsx            # Upload & analyze page
+│   │   └── wipe.tsx              # Data wipe page
+│   ├── app.css                   # Global styles
+│   ├── root.tsx                  # Root layout
+│   └── routes.ts                 # Route definitions
+│
+├── backend/                      # Backend (Express.js)
+│   ├── config/
+│   │   └── db.js                 # MongoDB connection
+│   ├── controllers/
+│   │   └── authController.js     # Register, login, profile logic
+│   ├── middleware/
+│   │   └── authMiddleware.js     # JWT verification middleware
+│   ├── models/
+│   │   └── User.js               # Mongoose user schema
+│   ├── routes/
+│   │   └── authRoutes.js         # Auth API route definitions
+│   ├── .env                      # Environment variables (not committed)
+│   ├── package.json              # Backend dependencies
+│   └── server.js                 # Express server entry point
+│
+├── constants/                    # Shared constants & AI prompts
+├── types/                        # TypeScript type definitions
+├── public/                       # Static assets (icons, images)
+├── package.json                  # Frontend dependencies
+├── vite.config.ts                # Vite configuration
+├── tsconfig.json                 # TypeScript configuration
+└── Dockerfile                    # Docker containerization
 ```
 
-**Installation**
+## 🚀 Getting Started
 
-Install the project dependencies using npm:
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [npm](https://www.npmjs.com/)
+- [Git](https://git-scm.com/)
+- A [MongoDB Atlas](https://www.mongodb.com/atlas) account (free tier works)
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/AbhayMahalle/ResumePilot.git
+cd ResumePilot
+```
+
+### 2. Set Up the Frontend
 
 ```bash
 npm install
-```
-
-**Running the Project**
-
-```bash
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser to view the project.
+The frontend will be running at [http://localhost:5173](http://localhost:5173).
 
-## <a name="links">🔗 Assets</a>
+### 3. Set Up the Backend
 
-Assets and snippets used in the project can be found in the **[video kit](https://jsm.dev/resumind-kit)**.
+```bash
+cd backend
+npm install
+```
 
-<a href="https://jsm.dev/resumind-kit" target="_blank">
-  <img src="public/readme/videokit.webp" alt="Video Kit Banner">
-</a>
+Create a `.env` file inside `backend/`:
 
-## <a name="more">🚀 More</a>
+```env
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/resumeAnalyzerDB?retryWrites=true&w=majority
+JWT_SECRET=your_jwt_secret_key
+PORT=5000
+```
 
-**Advance your skills with Next.js Pro Course**
+Start the backend server:
 
-Enjoyed creating this project? Dive deeper into our PRO courses for a richer learning adventure. They're packed with
-detailed explanations, cool features, and exercises to boost your skills. Give it a go!
+```bash
+node server.js
+```
 
-<a href="https://jsm.dev/resumind-courses" target="_blank">
-  <img src="public/readme/jsmpro.webp" alt="Project Banner">
-</a>
+The API will be running at [http://localhost:5000](http://localhost:5000).
+
+## 🔐 API Endpoints
+
+### Authentication
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/auth/register` | ❌ Public | Register a new user |
+| `POST` | `/api/auth/login` | ❌ Public | Login and receive JWT token |
+| `GET` | `/api/auth/profile` | ✅ Bearer Token | Get logged-in user's profile |
+
+### Example Requests
+
+**Register:**
+```bash
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "123456"
+}
+```
+
+**Login:**
+```bash
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "123456"
+}
+```
+
+**Profile (Protected):**
+```bash
+GET /api/auth/profile
+Authorization: Bearer <your_jwt_token>
+```
+
+## 📄 Environment Variables
+
+Create a `backend/.env` file with the following variables:
+
+| Variable | Description |
+|---|---|
+| `MONGO_URI` | MongoDB Atlas connection string |
+| `JWT_SECRET` | Secret key for signing JWT tokens |
+| `PORT` | Server port (default: `5000`) |
+
+> ⚠️ **Never commit your `.env` file.** It is excluded via `.gitignore`.
+
+## 📸 Screenshots
+
+<div align="center">
+  <img src="public/readme/hero.webp" alt="ResumePilot Hero" width="100%" />
+</div>
+
+---
+
+<div align="center">
+  <p>Built with ❤️ by <a href="https://github.com/AbhayMahalle">Abhay Mahalle</a></p>
+</div>
