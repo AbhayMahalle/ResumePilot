@@ -50,8 +50,6 @@ The frontend uses **React Router v7** and **Tailwind CSS** to provide a fast and
 | [Tailwind CSS v4](https://tailwindcss.com/) | Utility-first styling |
 | [Zustand](https://github.com/pmndrs/zustand) | Minimal global state management |
 | [Vite](https://vite.dev/) | Lightning-fast dev server & bundler |
-| [Puter.js](https://puter.com/) | Browser-based auth, cloud storage & AI |
-| [pdfjs-dist](https://mozilla.github.io/pdf.js/) | Client-side PDF rendering |
 
 ### Backend
 
