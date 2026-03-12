@@ -36,7 +36,7 @@
 
 **ResumePilot** is a full-stack AI-powered resume analysis platform. Upload your resume, provide a job description, and get an instant ATS compatibility score along with detailed, category-wise feedback — covering content, structure, skills, tone, and more.
 
-The frontend uses **React Router v7** with **Puter.js** for seamless browser-based auth, storage, and AI analysis. The backend provides a standalone **Express.js REST API** with **JWT authentication** and **MongoDB Atlas** for secure user management.
+The frontend uses **React Router v7** and **Tailwind CSS** to provide a fast and modern user interface. The backend provides a standalone **Express.js REST API** with **JWT authentication**, **MongoDB Atlas** for secure user management and resume storage, and **Google Gemini AI** for intelligent resume analysis.
 
 ## ⚙️ Tech Stack
 
