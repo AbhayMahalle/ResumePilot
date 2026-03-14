@@ -22,8 +22,14 @@ const register = async (req, res) => {
     // Create new user (password is hashed via pre-save hook)
     const user = await User.create({ name, email, password });
 
+    // Generate JWT token
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
     res.status(201).json({
       message: "User registered successfully",
+      token,
       user: {
         id: user._id,
         name: user.name,
@@ -60,9 +66,9 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // Generate JWT token (expires in 1 hour)
+    // Generate JWT token (expires in 7 days)
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "7d",
     });
 
     res.status(200).json({
@@ -96,6 +102,13 @@ const getProfile = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        avatar: user.avatar || "",
+        linkedin: user.linkedin || "",
+        github: user.github || "",
+        portfolio: user.portfolio || "",
+        jobRole: user.jobRole || "",
+        experienceLevel: user.experienceLevel || "",
+        skills: user.skills || [],
         createdAt: user.createdAt,
       },
     });
@@ -105,4 +118,54 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getProfile };
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+// @access  Private (requires JWT)
+const updateProfile = async (req, res) => {
+  try {
+    const allowedFields = ["name", "avatar", "linkedin", "github", "portfolio", "jobRole", "experienceLevel", "skills"];
+    const updates = {};
+
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) {
+        updates[field] = req.body[field];
+      }
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: "No valid fields to update" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.userId,
+      { $set: updates },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar || "",
+        linkedin: user.linkedin || "",
+        github: user.github || "",
+        portfolio: user.portfolio || "",
+        jobRole: user.jobRole || "",
+        experienceLevel: user.experienceLevel || "",
+        skills: user.skills || [],
+        createdAt: user.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error("UpdateProfile error:", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+module.exports = { register, login, getProfile, updateProfile };

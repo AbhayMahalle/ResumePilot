@@ -1,174 +1,246 @@
-@import url("https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* ============================================
+   ResumePilot Design System — Light SaaS Theme
+   ============================================ */
+
 @theme {
-  --font-sans: "Mona Sans", ui-sans-serif, system-ui, sans-serif,
-  "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --color-dark-200: #475467;
-  --color-light-blue-100: #c1d3f81a;
-  --color-light-blue-200: #a7bff14d;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
-  --color-badge-green: #d5faf1;
-  --color-badge-red: #f9e3e2;
-  --color-badge-yellow: #fceed8;
+  /* Primary palette */
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
+  --color-primary-light: #DBEAFE;
+  --color-secondary: #4F46E5;
+  --color-secondary-light: #EEF2FF;
 
-  --color-badge-green-text: #254d4a;
-  --color-badge-red-text: #752522;
-  --color-badge-yellow-text: #73321b;
+  /* Backgrounds */
+  --color-bg: #F8FAFC;
+  --color-card: #FFFFFF;
+  --color-border: #E2E8F0;
+
+  /* Text */
+  --color-text-primary: #1E293B;
+  --color-text-secondary: #64748B;
+  --color-text-muted: #94A3B8;
+
+  /* Status */
+  --color-success: #22C55E;
+  --color-success-light: #DCFCE7;
+  --color-warning: #F59E0B;
+  --color-warning-light: #FEF3C7;
+  --color-error: #EF4444;
+  --color-error-light: #FEE2E2;
+
+  /* Shadows — referenced in utilities */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
 }
 
-html,
-body {
-  @apply bg-white;
+/* ============================================
+   Base Styles
+   ============================================ */
+
+html, body {
+  @apply bg-bg text-text-primary font-sans antialiased;
 }
 
 main {
-  @apply min-h-screen pt-10;
+  @apply min-h-screen;
 }
+
 h1 {
-  @apply text-6xl  text-gradient leading-tight tracking-[-2px] font-semibold;
+  @apply text-4xl md:text-5xl lg:text-6xl font-bold text-text-primary leading-tight tracking-tight;
 }
 
 h2 {
-  @apply text-3xl text-dark-200;
+  @apply text-2xl md:text-3xl font-semibold text-text-primary;
+}
+
+h3 {
+  @apply text-xl font-semibold text-text-primary;
 }
 
 label {
-  @apply text-dark-200;
+  @apply text-sm font-medium text-text-secondary;
 }
+
 input {
-  @apply w-full p-4 inset-shadow rounded-2xl focus:outline-none bg-white;
+  @apply w-full px-4 py-3 bg-white border border-border rounded-xl text-text-primary
+         placeholder:text-text-muted
+         focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary
+         transition-all duration-200;
 }
 
 textarea {
-  @apply w-full p-4 inset-shadow rounded-2xl focus:outline-none bg-white;
+  @apply w-full px-4 py-3 bg-white border border-border rounded-xl text-text-primary
+         placeholder:text-text-muted
+         focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary
+         transition-all duration-200 resize-none;
 }
 
 form {
-  @apply flex flex-col items-start gap-8 w-full;
+  @apply flex flex-col items-start gap-5 w-full;
 }
 
+/* ============================================
+   Component Classes
+   ============================================ */
+
 @layer components {
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#AB8C95] via-[#000000] to-[#8E97C5];
+  /* === Buttons === */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           px-6 py-3 rounded-xl font-semibold text-white text-sm
+           bg-primary hover:bg-primary-hover
+           shadow-sm hover:shadow-md
+           transition-all duration-200
+           cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed;
   }
-  .gradient-border {
-    @apply bg-gradient-to-b from-light-blue-100 to-light-blue-200 p-4 rounded-2xl;
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2
+           px-6 py-3 rounded-xl font-semibold text-primary text-sm
+           bg-primary-light hover:bg-primary/10
+           transition-all duration-200
+           cursor-pointer;
   }
-  .primary-button {
-    @apply primary-gradient text-white rounded-full px-4 py-2 cursor-pointer w-full;
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2
+           px-6 py-3 rounded-xl font-semibold text-text-secondary text-sm
+           bg-white border border-border
+           hover:border-primary/30 hover:text-primary hover:bg-primary-light/50
+           transition-all duration-200
+           cursor-pointer;
   }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2
+           px-4 py-2 rounded-lg font-medium text-text-secondary text-sm
+           hover:bg-bg hover:text-text-primary
+           transition-all duration-200
+           cursor-pointer;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2
+           px-6 py-3 rounded-xl font-semibold text-error text-sm
+           bg-error-light hover:bg-error/10
+           transition-all duration-200
+           cursor-pointer;
+  }
+
+  /* === Cards === */
+  .card {
+    @apply bg-card rounded-2xl border border-border shadow-sm p-6;
+  }
+
+  .card-hover {
+    @apply bg-card rounded-2xl border border-border shadow-sm p-6
+           hover:shadow-md hover:-translate-y-0.5 transition-all duration-300;
+  }
+
+  /* === Navbar === */
+  .glass-nav {
+    @apply sticky top-0 z-50
+           bg-white/80 backdrop-blur-xl
+           border-b border-border/60
+           transition-all duration-300;
+  }
+
+  /* === Form elements === */
+  .form-group {
+    @apply flex flex-col gap-1.5 w-full;
+  }
+
+  .form-label {
+    @apply text-sm font-medium text-text-secondary;
+  }
+
+  /* === Score badges === */
+  .badge-success {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+           bg-success-light text-green-800;
+  }
+
+  .badge-warning {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+           bg-warning-light text-amber-800;
+  }
+
+  .badge-error {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+           bg-error-light text-red-800;
+  }
+
+  /* === Section layout === */
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .page-section {
+    @apply py-16 md:py-24;
+  }
+
+  /* === Skeleton loading === */
+  .skeleton {
+    @apply animate-pulse bg-gray-200 rounded-xl;
+  }
+
+  /* === Resume page specific === */
   .resume-nav {
-    @apply flex flex-row justify-between items-center p-4 border-b border-gray-200;
-  }
-  .resume-summary {
-    @apply flex flex-row items-center justify-center p-4 gap-4;
-    .category {
-      @apply flex flex-row gap-2 items-center bg-gray-50 rounded-2xl p-4 w-full justify-between;
-    }
-  }
-  .back-button {
-    @apply flex flex-row items-center gap-2 border border-gray-200 rounded-lg p-2 shadow-sm;
-  }
-  .auth-button {
-    @apply primary-gradient rounded-full py-4 px-8 cursor-pointer w-[600px] max-md:w-full text-3xl font-semibold text-white;
-  }
-  .main-section {
-    @apply flex flex-col items-center gap-8 pt-12 mx-15 pb-5;
-  }
-  .page-heading {
-    @apply flex flex-col items-center gap-8 max-w-4xl text-center;
-  }
-  .resumes-section {
-    @apply flex flex-wrap max-lg:flex-col gap-6 items-start  w-full max-w-[1850px] justify-evenly;
-  }
-
-  .resume-card {
-    @apply flex flex-col gap-8 h-[560px] w-full lg:w-[450px] xl:w-[490px] bg-white rounded-2xl p-4;
-  }
-
-  .resume-card-header {
-    @apply flex flex-row gap-2 justify-between min-h-[110px] max-sm:flex-col items-center max-md:justify-center max-md:items-center;
+    @apply flex flex-row justify-between items-center p-4 border-b border-border;
   }
 
   .feedback-section {
     @apply flex flex-col gap-8 w-1/2 px-8 max-lg:w-full py-6;
   }
-
-  .navbar {
-    @apply flex flex-row justify-between items-center bg-white rounded-full p-4 w-full px-10 max-w-[1200px] mx-auto;
-  }
-
-  .score-badge {
-    @apply flex flex-row items-center justify-center py-1 px-2 gap-4 rounded-[96px];
-  }
-
-  .form-div {
-    @apply flex flex-col gap-2 w-full items-start;
-  }
-
-  .uplader-drag-area {
-    @apply relative p-8 text-center transition-all duration-700 cursor-pointer bg-white rounded-2xl min-h-[208px];
-  }
-  .uploader-selected-file {
-    @apply flex items-center justify-between p-3 bg-gray-50 rounded-2xl;
-  }
 }
 
-@utility bg-gradient {
-  background: linear-gradient(to bottom, #f0f4ff 60%, #fa7185cc);
-}
-
-@utility text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#AB8C95] via-[#000000] to-[#8E97C5];
-}
-
-@utility gradient-hover {
-  @apply bg-gradient-to-b from-light-blue-100 to-light-blue-200;
-}
-
-@utility primary-gradient {
-  background: linear-gradient(to bottom, #8e98ff, #606beb);
-  box-shadow: 0px 74px 21px 0px #6678ef00;
-}
-
-@utility primary-gradient-hover {
-  background: linear-gradient(to bottom, #717dff, #4957eb);
-}
-
-@utility inset-shadow {
-  box-shadow: inset 0 0 12px 0 rgba(36, 99, 235, 0.2);
-  backdrop-filter: blur(10px);
-}
+/* ============================================
+   Keyframes & Animations
+   ============================================ */
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(37, 99, 235, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.4); }
+}
+
+@utility animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@utility animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@utility animate-glow {
+  animation: glow 2s ease-in-out infinite;
 }
 
 @utility progress-bar-gradient {
-  background: linear-gradient(90deg, #8e98ff, #606beb, #8e98ff);
+  background: linear-gradient(90deg, #2563EB, #4F46E5, #2563EB);
   background-size: 200% 100%;
   animation: shimmer 2s ease-in-out infinite;
-}
-
-@layer components {
-  .cancel-button {
-    @apply px-6 py-3 rounded-full border-2 border-gray-300 text-gray-600 font-semibold cursor-pointer
-           transition-all duration-200 hover:border-red-400 hover:text-red-500 hover:bg-red-50;
-  }
 }

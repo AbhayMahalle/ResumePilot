@@ -1,62 +1,75 @@
-import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
-const ScoreGauge = ({ score = 75 }: { score: number }) => {
-    const [pathLength, setPathLength] = useState(0);
-    const pathRef = useRef<SVGPathElement>(null);
+interface ScoreGaugeProps {
+  score: number;
+  size?: number;
+}
 
-    const percentage = score / 100;
+const ScoreGauge = ({ score, size = 120 }: ScoreGaugeProps) => {
+  const [displayScore, setDisplayScore] = useState(0);
+  const radius = (size - 12) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const clampedScore = Math.max(0, Math.min(100, score));
 
-    useEffect(() => {
-        if (pathRef.current) {
-            setPathLength(pathRef.current.getTotalLength());
-        }
-    }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => setDisplayScore(clampedScore), 100);
+    return () => clearTimeout(timer);
+  }, [clampedScore]);
 
-    return (
-        <div className="flex flex-col items-center">
-            <div className="relative w-40 h-20">
-                <svg viewBox="0 0 100 50" className="w-full h-full">
-                    <defs>
-                        <linearGradient
-                            id="gaugeGradient"
-                            x1="0%"
-                            y1="0%"
-                            x2="100%"
-                            y2="0%"
-                        >
-                            <stop offset="0%" stopColor="#a78bfa" />
-                            <stop offset="100%" stopColor="#fca5a5" />
-                        </linearGradient>
-                    </defs>
+  const color = clampedScore >= 70
+    ? "#22C55E"
+    : clampedScore >= 50
+    ? "#F59E0B"
+    : "#EF4444";
 
-                    {/* Background arc */}
-                    <path
-                        d="M10,50 A40,40 0 0,1 90,50"
-                        fill="none"
-                        stroke="#e5e7eb"
-                        strokeWidth="10"
-                        strokeLinecap="round"
-                    />
+  const bgColor = clampedScore >= 70
+    ? "#DCFCE7"
+    : clampedScore >= 50
+    ? "#FEF3C7"
+    : "#FEE2E2";
 
-                    {/* Foreground arc with rounded ends */}
-                    <path
-                        ref={pathRef}
-                        d="M10,50 A40,40 0 0,1 90,50"
-                        fill="none"
-                        stroke="url(#gaugeGradient)"
-                        strokeWidth="10"
-                        strokeLinecap="round"
-                        strokeDasharray={pathLength}
-                        strokeDashoffset={pathLength * (1 - percentage)}
-                    />
-                </svg>
-
-                <div className="absolute inset-0 flex flex-col items-center justify-center pt-2">
-                    <div className="text-xl font-semibold pt-4">{score}/100</div>
-                </div>
-            </div>
-        </div>
-    );
+  return (
+    <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        {/* Background circle */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="#F1F5F9"
+          strokeWidth={8}
+        />
+        {/* Progress circle */}
+        <motion.circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth={8}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: circumference - (displayScore / 100) * circumference }}
+          transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <motion.span
+          className="text-2xl font-bold"
+          style={{ color }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          {displayScore}
+        </motion.span>
+        <span className="text-xs text-text-muted">/100</span>
+      </div>
+    </div>
+  );
 };
 
 export default ScoreGauge;

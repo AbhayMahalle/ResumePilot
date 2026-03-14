@@ -6,6 +6,14 @@ interface User {
   id: string;
   name: string;
   email: string;
+  avatar?: string;
+  linkedin?: string;
+  github?: string;
+  portfolio?: string;
+  jobRole?: string;
+  experienceLevel?: string;
+  skills?: string[];
+  createdAt?: string;
 }
 
 interface AuthState {
@@ -17,6 +25,7 @@ interface AuthState {
   login: (token: string, user: User) => void;
   logout: () => void;
   fetchProfile: () => Promise<void>;
+  updateProfile: (data: Partial<User>) => Promise<void>;
   clearError: () => void;
   setError: (err: string) => void;
 }
@@ -32,7 +41,7 @@ export const useAuthStore = create<AuthState>()(
 
       login: (token, user) => {
         set({ token, user, isAuthenticated: true, error: null });
-        api.setToken(token); // Update API client with the token
+        api.setToken(token);
       },
 
       logout: () => {
@@ -48,23 +57,31 @@ export const useAuthStore = create<AuthState>()(
         }
 
         set({ isLoading: true, error: null });
-        api.setToken(token); // Ensure api knows token from cache
+        api.setToken(token);
 
         try {
-          const profile = await api.auth.getProfile();
+          const data = await api.auth.getProfile();
           set({
-            user: { id: profile.id, name: profile.name, email: profile.email },
+            user: data.user,
             isAuthenticated: true,
             isLoading: false,
           });
         } catch (error) {
           console.error("Failed to fetch profile:", error);
-          // Token might be expired or invalid
           logout();
-          set({ 
-            isLoading: false, 
-            error: "Session expired. Please log in again." 
+          set({
+            isLoading: false,
+            error: "Session expired. Please log in again.",
           });
+        }
+      },
+
+      updateProfile: async (profileData) => {
+        try {
+          const data = await api.auth.updateProfile(profileData);
+          set({ user: data.user });
+        } catch (error: any) {
+          throw error;
         }
       },
 
@@ -72,8 +89,8 @@ export const useAuthStore = create<AuthState>()(
       setError: (error: string) => set({ error }),
     }),
     {
-      name: "resume-pilot-auth", // unique name for localStorage
-      partialize: (state) => ({ token: state.token }), // Only persist the token
+      name: "resume-pilot-auth",
+      partialize: (state) => ({ token: state.token }),
     }
   )
 );

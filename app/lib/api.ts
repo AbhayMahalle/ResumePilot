@@ -31,7 +31,7 @@ class ApiClient {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || data.error || "An API error occurred");
+      throw new Error(data.message || data.error || "An API error occurred");
     }
 
     return data;
@@ -39,17 +39,22 @@ class ApiClient {
 
   // Authentication endpoints
   auth = {
-    login: (credentials: any) =>
+    login: (credentials: { email: string; password: string }) =>
       this.fetchAPI("/auth/login", {
         method: "POST",
         body: JSON.stringify(credentials),
       }),
-    register: (userData: any) =>
+    register: (userData: { name: string; email: string; password: string }) =>
       this.fetchAPI("/auth/register", {
         method: "POST",
         body: JSON.stringify(userData),
       }),
     getProfile: () => this.fetchAPI("/auth/profile", { method: "GET" }),
+    updateProfile: (data: Record<string, any>) =>
+      this.fetchAPI("/auth/profile", {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
   };
 
   // Resume endpoints
@@ -67,7 +72,7 @@ class ApiClient {
     uploadAndAnalyze: (formData: FormData) =>
       this.fetchAPI("/resumes/analyze", {
         method: "POST",
-        body: formData, // the browser will automatically pick the right multipart/form-data boundary
+        body: formData,
       }),
   };
 }

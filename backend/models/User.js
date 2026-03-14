@@ -17,6 +17,39 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Password is required"],
   },
+  avatar: {
+    type: String,
+    default: "",
+  },
+  linkedin: {
+    type: String,
+    default: "",
+    trim: true,
+  },
+  github: {
+    type: String,
+    default: "",
+    trim: true,
+  },
+  portfolio: {
+    type: String,
+    default: "",
+    trim: true,
+  },
+  jobRole: {
+    type: String,
+    default: "",
+    trim: true,
+  },
+  experienceLevel: {
+    type: String,
+    default: "",
+    enum: ["", "Entry Level", "Mid Level", "Senior", "Lead", "Manager", "Director", "VP", "C-Level"],
+  },
+  skills: {
+    type: [String],
+    default: [],
+  },
   createdAt: {
     type: Date,
     default: Date.now,

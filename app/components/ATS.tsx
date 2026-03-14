@@ -1,77 +1,48 @@
-import React from 'react'
-
-interface Suggestion {
-  type: "good" | "improve";
-  tip: string;
-}
+import React from "react";
+import { CheckCircle, AlertCircle } from "lucide-react";
 
 interface ATSProps {
   score: number;
-  suggestions: Suggestion[];
+  suggestions: { type: "good" | "improve"; tip: string }[];
 }
 
 const ATS: React.FC<ATSProps> = ({ score, suggestions }) => {
-  // Determine background gradient based on score
-  const gradientClass = score > 69
-    ? 'from-green-100'
-    : score > 49
-      ? 'from-yellow-100'
-      : 'from-red-100';
-
-  // Determine icon based on score
-  const iconSrc = score > 69
-    ? '/icons/ats-good.svg'
-    : score > 49
-      ? '/icons/ats-warning.svg'
-      : '/icons/ats-bad.svg';
-
-  // Determine subtitle based on score
-  const subtitle = score > 69
-    ? 'Great Job!'
-    : score > 49
-      ? 'Good Start'
-      : 'Needs Improvement';
+  const config = score >= 70
+    ? { gradient: "from-success-light", label: "Great Job!", color: "text-green-700" }
+    : score >= 50
+    ? { gradient: "from-warning-light", label: "Good Start", color: "text-amber-700" }
+    : { gradient: "from-error-light", label: "Needs Improvement", color: "text-red-700" };
 
   return (
-    <div className={`bg-gradient-to-b ${gradientClass} to-white rounded-2xl shadow-md w-full p-6`}>
-      {/* Top section with icon and headline */}
-      <div className="flex items-center gap-4 mb-6">
-        <img src={iconSrc} alt="ATS Score Icon" className="w-12 h-12" />
+    <div className={`card bg-gradient-to-b ${config.gradient} to-white`}>
+      <div className="flex items-center gap-4 mb-4">
+        <div className={`text-2xl font-bold ${config.color}`}>{score}/100</div>
         <div>
-          <h2 className="text-2xl font-bold">ATS Score - {score}/100</h2>
+          <h3 className="text-lg font-semibold">ATS Compatibility</h3>
+          <p className={`text-sm font-medium ${config.color}`}>{config.label}</p>
         </div>
       </div>
 
-      {/* Description section */}
-      <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-2">{subtitle}</h3>
-        <p className="text-gray-600 mb-4">
-          This score represents how well your resume is likely to perform in Applicant Tracking Systems used by employers.
-        </p>
-
-        {/* Suggestions list */}
-        <div className="space-y-3">
-          {suggestions.map((suggestion, index) => (
-            <div key={index} className="flex items-start gap-3">
-              <img
-                src={suggestion.type === "good" ? "/icons/check.svg" : "/icons/warning.svg"}
-                alt={suggestion.type === "good" ? "Check" : "Warning"}
-                className="w-5 h-5 mt-1"
-              />
-              <p className={suggestion.type === "good" ? "text-green-700" : "text-amber-700"}>
-                {suggestion.tip}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Closing encouragement */}
-      <p className="text-gray-700 italic">
-        Keep refining your resume to improve your chances of getting past ATS filters and into the hands of recruiters.
+      <p className="text-sm text-text-secondary mb-5">
+        How well your resume performs in Applicant Tracking Systems used by employers.
       </p>
-    </div>
-  )
-}
 
-export default ATS
+      <div className="space-y-2.5">
+        {suggestions.map((s, i) => (
+          <div key={i} className="flex items-start gap-2.5">
+            {s.type === "good" ? (
+              <CheckCircle className="w-4 h-4 text-success shrink-0 mt-0.5" />
+            ) : (
+              <AlertCircle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
+            )}
+            <p className={`text-sm ${s.type === "good" ? "text-green-700" : "text-amber-700"}`}>
+              {s.tip}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ATS;
