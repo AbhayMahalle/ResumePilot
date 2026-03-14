@@ -18,6 +18,29 @@
 
 ---
 
+## 📸 Project Showcase
+
+<div align="center">
+  <h3>✨ Modern Landing Page</h3>
+  <img src="public/landingPage.png" alt="ResumePilot Landing Page" width="100%" />
+</div>
+
+<br />
+
+<div align="center">
+  <h3>🚀 Interactive Dashboard</h3>
+  <img src="public/dashboard.png" alt="ResumePilot Dashboard" width="100%" />
+</div>
+
+<br />
+
+<div align="center">
+  <h3>📁 Smart Resume Upload</h3>
+  <img src="public/resumeUploadSection.png" alt="Resume Upload Section" width="100%" />
+</div>
+
+---
+
 ## 📋 Table of Contents
 
 - [✨ Introduction](#-introduction)

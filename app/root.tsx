@@ -15,6 +15,7 @@ import { Toaster } from "react-hot-toast";
 import { AnimatePresence } from "framer-motion";
 
 export const links: Route.LinksFunction = () => [
+  { rel: "icon", href: "/favicon.png", type: "image/png" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
