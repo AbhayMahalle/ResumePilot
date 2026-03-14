@@ -28,8 +28,13 @@ app.get("/", (req, res) => {
   res.json({ message: "Resume Analyzer API is running" });
 });
 
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Export the app for Vercel serverless functions
+module.exports = app;
+
+// Start server locally if not in a serverless environment
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
