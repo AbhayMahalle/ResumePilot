@@ -1,19 +1,15 @@
 {
   "version": 2,
+  "functions": {
+    "backend/server.js": {
+      "memory": 1024,
+      "maxDuration": 15
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "/backend/server.js"
-    }
-  ],
-  "builds": [
-    {
-      "src": "backend/server.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/remix"
     }
   ]
 }
